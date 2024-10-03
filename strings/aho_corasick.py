@@ -1,10 +1,20 @@
-from __future__ import annotations
+"""
+The Aho-Corasick Algorithm
 
+An implementation of the aho-corasick algorithm in Python
+"""
+
+from __future__ import annotations
 from collections import deque
 
 
 class Automaton:
     def __init__(self, keywords: list[str]):
+        """
+        Initialize with a list of keywords
+
+        >>> A = Automaton(["what", "hat", "ver", "er"])
+        """
         self.adlist: list[dict] = []
         self.adlist.append(
             {"value": "", "next_states": [], "fail_state": 0, "output": []}
@@ -15,12 +25,39 @@ class Automaton:
         self.set_fail_transitions()
 
     def find_next_state(self, current_state: int, char: str) -> int | None:
+        """
+        Find next state based on current state and character
+
+        >>> A = Automaton(["what", "hat", "ver", "er"])
+        >>> A.find_next_state(0, 'w')
+        1
+
+        >>> A1 = Automaton([])
+        >>> A1.find_next_state(0, '')
+        """
         for state in self.adlist[current_state]["next_states"]:
             if char == self.adlist[state]["value"]:
                 return state
         return None
 
     def add_keyword(self, keyword: str) -> None:
+        """
+        Add a keyword to adlist
+
+        >>> A = Automaton([])
+        >>> A.add_keyword('er')
+        >>> A.adlist[1]['value']
+        'e'
+        >>> A.adlist[2]['value']
+        'r'
+        >>> A.adlist[2]['output']
+        ['er']
+        
+        >>> A1 = Automaton([])
+        >>> A1.add_keyword('')
+        >>> A1.adlist[0]['value']
+        ''
+        """
         current_state = 0
         for character in keyword:
             next_state = self.find_next_state(current_state, character)
@@ -40,6 +77,12 @@ class Automaton:
         self.adlist[current_state]["output"].append(keyword)
 
     def set_fail_transitions(self) -> None:
+        """
+        Set fail transitions
+        >>> A = Automaton(["what", "hat", "ver", "er"])
+        >>> A.adlist[1]["fail_state"]
+        0
+        """
         q: deque = deque()
         for node in self.adlist[0]["next_states"]:
             q.append(node)
@@ -66,9 +109,17 @@ class Automaton:
 
     def search_in(self, string: str) -> dict[str, list[int]]:
         """
+        Search for occurences of keywords in string
         >>> A = Automaton(["what", "hat", "ver", "er"])
         >>> A.search_in("whatever, err ... , wherever")
         {'what': [0], 'hat': [1], 'ver': [5, 25], 'er': [6, 10, 22, 26]}
+
+        >>> A1 = Automaton(["what"])
+        >>> A1.search_in("what, what, what")
+        {'what': [0, 6, 12]}
+
+        >>> A1.search_in("Text with no matches")
+        {}
         """
         result: dict = {}  # returns a dict with keywords and list of its occurrences
         current_state = 0
