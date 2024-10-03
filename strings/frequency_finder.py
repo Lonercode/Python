@@ -1,8 +1,12 @@
-# Frequency Finder
+"""
+Frequency Finder
+
+A frequency analysis tool for English texts.
+frequency taken from https://en.wikipedia.org/wiki/Letter_frequency
+"""
 
 import string
 
-# frequency taken from https://en.wikipedia.org/wiki/Letter_frequency
 english_letter_freq = {
     "E": 12.70,
     "T": 9.06,
@@ -36,6 +40,15 @@ LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 def get_letter_count(message: str) -> dict[str, int]:
+    """
+    returns the frequency of letters in the given string
+
+    >>> get_letter_count("This is a sentence")
+    {'A': 1, 'B': 0, 'C': 1, 'D': 0, 'E': 3, 'F': 0, 'G': 0, 'H': 1, 'I': 2, 'J': 0, 'K': 0, 'L': 0, 'M': 0, 'N': 2, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 3, 'T': 2, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0}
+
+    >>> get_letter_count("")
+    {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0, 'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0}
+    """
     letter_count = {letter: 0 for letter in string.ascii_uppercase}
     for letter in message.upper():
         if letter in LETTERS:
@@ -45,18 +58,35 @@ def get_letter_count(message: str) -> dict[str, int]:
 
 
 def get_item_at_index_zero(x: tuple) -> str:
+    """
+    return tuple item at index 0
+
+    >>> get_item_at_index_zero(('T','h','i','s' ))
+    'T'
+
+    >>> get_item_at_index_zero(('T','T','T','T' ))
+    'T'
+
+    >>> get_item_at_index_zero(('', ))
+    ''
+    """
     return x[0]
 
 
 def get_frequency_order(message: str) -> str:
     """
     Get the frequency order of the letters in the given string
+
     >>> get_frequency_order('Hello World')
     'LOWDRHEZQXJKVBPYGFMUCSNIAT'
     >>> get_frequency_order('Hello@')
     'LHOEZQXJKVBPYGFWMUCDRSNIAT'
     >>> get_frequency_order('h')
     'HZQXJKVBPYGFWMUCLDRSNIOATE'
+    >>> get_frequency_order('')
+    'ZQXJKVBPYGFWMUCLDRHSNIOATE'
+    >>> get_frequency_order('123')
+    'ZQXJKVBPYGFWMUCLDRHSNIOATE'
     """
     letter_to_freq = get_letter_count(message)
     freq_to_letter: dict[int, list[str]] = {
@@ -81,8 +111,15 @@ def get_frequency_order(message: str) -> str:
 
 def english_freq_match_score(message: str) -> int:
     """
+    returns a match score determined by frequency relative to common and uncommon
+    letters based on ETAOIN
+
     >>> english_freq_match_score('Hello World')
     1
+    >>> english_freq_match_score('slum')
+    0
+    >>> english_freq_match_score('')
+    0
     """
     freq_order = get_frequency_order(message)
     match_score = 0
